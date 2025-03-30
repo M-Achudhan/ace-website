@@ -1,5 +1,5 @@
 import Image from "next/image";
-import React from 'react';
+import React , { useState }from 'react';
 import styled from 'styled-components';
 import { A11y, Autoplay, Navigation } from 'swiper';
 import { Swiper, SwiperSlide } from 'swiper/react';
@@ -64,8 +64,22 @@ const TESTIMONIALS = [
 ];
 
 export default function Testimonials() {
-  return (
+    const [year,setYear]=useState<number>(2024);
+    const [activeIndex, setActiveIndex] = useState<number>(2024);
+    const handleYear=(event: React.MouseEvent<HTMLButtonElement>)=>{
+      const index = Number(event.currentTarget.getAttribute('data-index'));   
+      // const indexYear = Number(event.currentTarget.getAttribute('data-index'));
+      setYear(index);
+      setActiveIndex(index); 
+      console.log(year);
+    }
+    return (
     <div>
+      <EventYearWrapper>
+      <ButtonWrapper   data-index={2025} isActive={activeIndex===2025} onClick={(e)=>handleYear(e)} >2025</ButtonWrapper>
+      <ButtonWrapper   data-index={2024} isActive={activeIndex===2024} onClick={(e)=>handleYear(e)}>2024</ButtonWrapper>
+      </EventYearWrapper>
+       
       <TestimonialsWrapper>
         <Swiper
           modules={[Navigation, Autoplay, A11y]}
@@ -78,7 +92,12 @@ export default function Testimonials() {
           touchReleaseOnEdges={true}
           resistanceRatio={0.85}
         >
-          {TESTIMONIALS.map((singleTestimonial, idx) => (
+         
+          {TESTIMONIALS.map((singleTestimonial, idx) => {
+             const date =singleTestimonial.author.date;
+            const disp_year=date.split(' ')[2];
+            if (disp_year !== String(year)) return null;
+             return(
             <SwiperSlide key={idx}>
               <TestimonialCard>
                 <Title>{singleTestimonial.name}</Title>
@@ -95,8 +114,10 @@ export default function Testimonials() {
                   </AuthorContent>
                 </AuthorContainer>
               </TestimonialCard>
-            </SwiperSlide>
-          ))}
+            </SwiperSlide> 
+             )
+            }
+          )}
         </Swiper>
       </TestimonialsWrapper>
     </div>
@@ -164,7 +185,7 @@ const TestimonialsWrapper = styled(Container)`
   }
 
   .swiper-button-prev {
-    color: rgb(var(--textSecondary));
+    color: rgb(var(--textSecondarxy));
     background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20viewBox%3D'0%200%2027%2044'%3E%3Cpath%20d%3D'M0%2C22L22%2C0l2.1%2C2.1L4.2%2C22l19.9%2C19.9L22%2C44L0%2C22L0%2C22L0%2C22z'%20fill%3D'%23currentColor'%2F%3E%3C%2Fsvg%3E");
   }
 
@@ -222,4 +243,20 @@ const AuthorTitle = styled.p`
 
 const AuthorName = styled.p`
   font-weight: normal;
+`;
+
+const EventYearWrapper = styled.div`
+width:100%;
+display:flex;
+justify-content:space-between;
+padding:0 35%;
+font-size:30px;
+
+`;
+const ButtonWrapper =styled.button<{isActive : boolean}>`
+    background-color: ${(props) => (props.isActive ? 'white' : 'black')};
+    color: ${(props) => (props.isActive ? 'black' : 'white')};
+    cursor: pointer;
+    margin-bottom: 30px;
+    
 `;
